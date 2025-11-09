@@ -7,8 +7,8 @@ public class Chunk {
     private final int startX;
     private final int startY;
 
-    public static final int chunkWidth = 32;
-    public static final int chunkHeight = 32;
+    public static final int chunkWidth = Map.CHUNK_WIDTH;
+    public static final int chunkHeight = Map.CHUNK_HEIGHT;
 
     // Reference to worldPixels
     private int[][] chunkPixels;

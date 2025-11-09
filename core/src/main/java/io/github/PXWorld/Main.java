@@ -50,6 +50,30 @@ public class Main extends Game implements InputProcessor {
         sim.step(worldMap.getAllChunks());
     }
 
+    private void placePixels(final int n, final int wx, final int wy) {
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                switch (elementPick) {
+                    case ELEMENT_PICK_SAND: {
+                        worldMap.setPixel(
+                            wx+i, wy+j, PixelType.PIXEL_TYPE_SAND, Map.FLAG_B_BLOCKING | Map.FLAG_B_FALLING,
+                            Map.COLOR_SAND_RGB565);
+                        break;
+                    }
+                    case ELEMENT_PICK_WATER: {
+                        worldMap.setPixel(
+                            wx+i, wy+j, PixelType.PIXEL_TYPE_WATER, Map.FLAG_B_FLUID | Map.FLAG_B_BLOCKING | Map.FLAG_B_FALLING,
+                            Map.COLOR_WATER_RGB565);
+                        break;
+                    }
+                    default: {
+                    }
+                }
+
+            }
+        }
+    }
+
     @Override
     public void create() {
         Gdx.app.setLogLevel(Application.LOG_DEBUG);
@@ -69,9 +93,7 @@ public class Main extends Game implements InputProcessor {
     @Override
     public void render() {
         ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
-        for (int i = 0; i < 2; i++) {
-            stepSimulation();
-        }
+        stepSimulation();
         final List<Chunk> clist = worldMap.getAllChunks();
         for (final Chunk c : clist) { // TODO: to debug, print a red rectangle around chunks being rendered
             if (c.getIsDirty()) {
@@ -162,27 +184,7 @@ public class Main extends Game implements InputProcessor {
         System.out.println("wx = " + wx + ", wy = " + wy);
         if (button == Input.Buttons.LEFT) {
             this.isPickerActive = false;
-            for (int i = 0; i < 30; i++) {
-                for (int j = 0; j < 30; j++) {
-                    switch (elementPick) {
-                        case ELEMENT_PICK_SAND: {
-                            worldMap.setPixel(
-                                wx+i, wy+j, PixelType.PIXEL_TYPE_SAND, Map.FLAG_B_BLOCKING | Map.FLAG_B_FALLING,
-                                Map.COLOR_SAND_RGB565);
-                            break;
-                        }
-                        case ELEMENT_PICK_WATER: {
-                            worldMap.setPixel(
-                                wx+i, wy+j, PixelType.PIXEL_TYPE_WATER, Map.FLAG_B_FLUID | Map.FLAG_B_BLOCKING | Map.FLAG_B_FALLING,
-                                Map.COLOR_WATER_RGB565);
-                            break;
-                        }
-                        default: {
-                        }
-                    }
-
-                }
-            }
+            placePixels(30, wx, wy);
         } else if (button == Input.Buttons.RIGHT) {
             // spawn circle
             // choose either sand or water
@@ -208,8 +210,17 @@ public class Main extends Game implements InputProcessor {
     }
 
     @Override
-    public boolean touchDragged(int i, int i1, int i2) {
-        return false;
+    public boolean touchDragged(int screenX, int screenY, int pointer) {
+        if (pointer > 0) return false;
+
+        Vector3 v = new Vector3(screenX, screenY, 0);
+        camera.unproject(v);
+        int wx = clamp((int)v.x, 0, Map.getMapW()-1);
+        int wy = Map.getMapH() - 1 - clamp((int)v.y, 0, Map.getMapH()-1);
+
+        placePixels(30, wx, wy);
+
+        return true;
     }
 
     @Override
@@ -217,14 +228,15 @@ public class Main extends Game implements InputProcessor {
         float dx = screenX - pickerCenter.x;
         float dy = screenY - pickerCenter.y;
         float r2 = dx*dx + dy*dy;
-        if (r2 > pickerRadius*pickerRadius) {
-            this.elementPick = ElementPick.ELEMENT_PICK_NONE;
-        } else if (dx < 0) {
-            this.elementPick = ElementPick.ELEMENT_PICK_SAND;
-        } else {
-            this.elementPick = ElementPick.ELEMENT_PICK_WATER;
+        if (isPickerActive) {
+            if (dx < 0) {
+                this.elementPick = ElementPick.ELEMENT_PICK_SAND;
+            } else if (dx >= 0) {
+                this.elementPick = ElementPick.ELEMENT_PICK_WATER;
+            }
+            return true;
         }
-        return true;
+        return false;
     }
 
     @Override

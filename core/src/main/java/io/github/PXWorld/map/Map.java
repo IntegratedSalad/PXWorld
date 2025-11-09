@@ -65,6 +65,9 @@ public class Map {
 
     public static final int COLOR_SKY_RGB888 =  0x0099FFFF;
 
+    public static final int CHUNK_WIDTH = 64;
+    public static final int CHUNK_HEIGHT = 64;
+
     public Map() {
         this.initMap();
     }
@@ -95,8 +98,8 @@ public class Map {
             }
         }
         System.out.println("Creating chunks...");
-        for (int cIdy = 0; cIdy < MAP_W; cIdy+=32) {
-            for (int cIdx = 0; cIdx < MAP_H; cIdx+=32) {
+        for (int cIdy = 0; cIdy < MAP_W; cIdy+=CHUNK_HEIGHT) {
+            for (int cIdx = 0; cIdx < MAP_H; cIdx+=CHUNK_WIDTH) {
                 Chunk c = new Chunk(cIdx, cIdy, this.mapPixels);
                 chunks.add(c);
             }
