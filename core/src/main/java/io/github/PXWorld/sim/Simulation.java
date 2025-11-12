@@ -30,6 +30,15 @@ public class Simulation {
     // all return chunks needing updating
     public void step(List<Chunk> chunks) {
         for (Chunk chunk : chunks) {
+            // TODO: Somehow omit the chunks which don't have anything going on in them.
+            // Remember - some event modifies chunks (and demands update).
+            // If I add something to the chunk, we can notify them.
+            // If pixels fall out of the chunk onto another, that chunk can notify the other or add it to the list of
+            // chunks to update
+            // Maybe we can track how many pixels are there in the chunk.
+            // I think the reason for the weird behaviour (updating in small clusters - chunks)
+            // is because I am not marking the chunks, which pixels are getting transferred to, when they move out of
+            // the current one
             boolean isDirtyChunk = false;
             chunk.setIsDirty(isDirtyChunk);
             final int sx = chunk.getStartX();
@@ -38,12 +47,13 @@ public class Simulation {
                 for (int cx = sx; cx < sx + Chunk.chunkWidth; cx++) {
                     // simulate pixels
                     // 1. Get behavior
+                    // TODO: Fix sand disappearing when on water that moves down
                     final int pixelBehaviourData = chunk.getPixelData(cx, cy) & 0x00FF0000;
                     if ((pixelBehaviourData & Map.FLAG_B_FALLING) == Map.FLAG_B_FALLING) {
-                        isDirtyChunk |= simulateFalling(chunk, cx, cy);
+                        isDirtyChunk |= simulateFalling(chunk, cx, cy); // TODO: flag other chunk if the pixel got into it
                     }
                     if ((pixelBehaviourData & Map.FLAG_B_FLUID) == Map.FLAG_B_FLUID) {
-                        isDirtyChunk |= simulateFluid(chunk, cx, cy);
+                        isDirtyChunk |= simulateFluid(chunk, cx, cy); // TODO: flag other chunk if the pixel got into it
                     }
                 }
             }

@@ -29,10 +29,10 @@ import java.util.List;
     Only those who are dirty, will be drawn onto the world pixmap.
  */
 public class Map {
-    private static final int MAP_W = 1024;
-    private static final int MAP_H = 1024;
+    private static final int MAP_W = 256;
+    private static final int MAP_H = 256;
 
-    private static final int noOfChunks = 1024 / Chunk.chunkWidth; // chunk must be a rectangle
+    private static final int noOfChunks = MAP_W / Chunk.chunkWidth; // chunk must be a rectangle
     private int[][] mapPixels = new int[MAP_H][MAP_W];
     private Pixmap pixmap; // maybe get rid of that
     private List<Chunk> chunks = new ArrayList<Chunk>(noOfChunks);

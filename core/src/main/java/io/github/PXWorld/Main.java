@@ -248,14 +248,15 @@ public class Main extends Game implements InputProcessor {
 /*
 * Demo scope:
 * 1. Sand [V]
-* 2. Water
-* 3. Rain
+* 2. Water [V]
+* 3. Rain? Should fall faster than anything
 * 4. Wood
 * 5. Fire
 * 6. Soil
 * 7. Mud (timers => after some time passed, wet soil turns into mud)
 * 8. Clouds?
 * 9. Gravity?
+* 10. Explosions?
 * */
 // Create repo now.
 

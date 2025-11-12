@@ -15,6 +15,8 @@ public class Chunk {
 
     private boolean isDirty = false;
 
+    private boolean shouldBeProcessed = false;
+
 //    Pixmap pxmap;
 
     public Chunk(final int startX, final int startY, int[][] worldPixels) {
